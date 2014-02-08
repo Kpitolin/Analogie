@@ -23,7 +23,7 @@ class Document
 
 public:
 //----------------------------------------------------- M?thodes publiques
-    void setURL ();
+    string toString ();
     // Mode d'emploi : met a jour, a chaque ligne, l'url du document si
     // celle-ci existe deja dans la map
     // Contrat : on considere que l'URL est conforme a l'exemple donne
@@ -33,14 +33,20 @@ public:
     // Mode d'emploi : parcours la map de referer afin de compter le nombre
     // total de hits associes aux documents
 
-
+    void addReferer (string urlReferer);
+    // Mode d'emploi : sert à ajouter un url referer associe au document
+    // ou à incrementer le nb de hits pour un referer existant
 //------------------------------------------------- Surcharge d'op?rateurs
-    friend bool operator == ( const Document & a ,const Document & b );
+    //friend bool operator == ( const Document & a ,const Document & b );
 	// Mode d'emploi :
 	// Redéfinition de l'opérateur ==.
 	//
 	// Contrat :
 	//
+
+    friend bool operator< (const Document &a, const Document &b);
+	// Mode d'emploi :
+
 
 //-------------------------------------------- Constructeurs - destructeur
     Document ( const Document & unDocument );
@@ -63,6 +69,7 @@ protected:
     long taille;
     string date;
     map <string, int> referers;
+    long nbHits;
     //---------------------------------------------------------- Classes amies
     friend class Fichier;
     //permet a Fichier d'utiliser les methodes de Document

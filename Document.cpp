@@ -27,27 +27,52 @@ using namespace std;
 //-------------------------------------------------------- Fonctions amies
 
 //----------------------------------------------------- M?thodes publiques
-void Document::setURL ()
+string Document::toString ()
 // Algorithme :
 //
 {
+    return url;
 } //----- Fin de M?thode
 
 long Document::calculerNbHits ()
 {
-    return 0;
+    
+     //nbHits ++;
+    nbHits = 0;
+    for ( map <string, int>::iterator iter = referers.begin(); iter!=referers.end();++iter){
+       nbHits+= iter->second ;
+    }
+    return nbHits;
 } //----- Fin de M?thode
 
+void Document::addReferer (string urlReferer){
+    if (referers.find(urlReferer)!= referers.end()){
+        referers[urlReferer]++;
+    }else{
+        referers[urlReferer]=1;
+    }
+    calculerNbHits();
+}
 
 //------------------------------------------------- Surcharge d'op?rateurs
-bool operator==(const Document & a, const Document & b)
+//bool operator==(const Document & a, const Document & b)
+//// Algorithme :
+////
+//{
+//	bool res;
+//	a.url == b.url ? res = true : res = false;
+//	return res;
+//}
+
+bool operator<(const Document & a ,const Document & b)
 // Algorithme :
 //
 {
 	bool res;
-	a.url == b.url ? res = true : res = false;
+	a.nbHits < b.nbHits ? res = true : res = false;
 	return res;
 }
+
 
 
 //-------------------------------------------- Constructeurs - destructeur
@@ -72,6 +97,7 @@ Document::Document (string urlParam)
     
     
     url = urlParam;
+    nbHits = 0;
 } //----- Fin de Document
 
 

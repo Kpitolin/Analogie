@@ -12,6 +12,7 @@ using namespace std;
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <list>
 #include "Document.h"
 //------------------------------------------------------------- Constantes
 
@@ -61,7 +62,7 @@ public:
     void genererFichierDot (string nomDot);
     // Mode d'emploi : cree un fichier dot quand l'option -g est presente
     
-    void afficheDocConsult ();
+    void afficheDocConsult (int nbDocsPlusConsultes = 10);
     // Mode d'emploi : affiche les dix documents les plus consultes par
     // ordre decroissant
     
@@ -70,6 +71,15 @@ public:
     // des types de fichiers ignorés
 
     int extraitDate (string date);
+    // Mode d'emploi : extrait la date et la transforme en int
+    // Contrat : la date est valide
+    
+    void addDocument (vector <string> tableauInfos);
+    // Mode d'emploi : ajoute le doument a la map s'il n'existe pas
+    // s'il existe on appelle addReferer
+    // Contrat :
+    //void trieListeDocs();
+    
 //------------------------------------------------- Surcharge d'op?rateurs
   
 
@@ -93,7 +103,8 @@ protected:
 //----------------------------------------------------- Attributs prot?g?s
     string cheminAcces;
     vector <bool> optionsActives;
-    map <Document*,long > documents;
+    map <string,Document*> documents;
+    list <Document*> listDocs;
 //---------------------------------------------------------- Classes amies
     friend class CreateurFichier;
     //permet a CreateurFichier d'utiliser les methodes de Fichier
