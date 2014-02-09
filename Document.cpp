@@ -55,14 +55,7 @@ void Document::addReferer (string urlReferer){
 }
 
 //------------------------------------------------- Surcharge d'op?rateurs
-//bool operator==(const Document & a, const Document & b)
-//// Algorithme :
-////
-//{
-//	bool res;
-//	a.url == b.url ? res = true : res = false;
-//	return res;
-//}
+
 
 bool operator<(const Document & a ,const Document & b)
 // Algorithme :

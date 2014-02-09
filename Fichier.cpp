@@ -57,7 +57,7 @@ void Fichier::analyseLigne(string ligne,long nbHitsAnalyse,int heureAnalyse,stri
         if (optionsActives[TYPE_FICHIER_INUTILE] && optionsActives [VERIF_HORAIRE]){
             
             if( !inutiliteFichier( tableauInfos [POSITION_URLDOC]) && extraitDate( tableauInfos [POSITION_DATE]) == heureAnalyse  ){
-                
+                cout << "On a un fichier non inutile"<<endl;
                 addDocument(tableauInfos);
                 
             }
@@ -98,6 +98,7 @@ void Fichier::analyseFichier(long nbHitsAnalyse,int heureAnalyse, string nomFich
         while(getline(fichier, ligne)){
             analyseLigne(ligne,nbHitsAnalyse, heureAnalyse, nomFichierDot);
         }
+        supprimeFichierNbHitsInf(nbHitsAnalyse);
         afficheDocConsult();
         if (nomFichierDot!=""){
             genererFichierDot(nomFichierDot);
@@ -121,6 +122,7 @@ void Fichier::genererFichierDot (string nomDot)
         fluxFichier<<"digraph {"<<endl;
       
         for(map<string,Document*>::iterator iter=documents.begin();  iter!= documents.end(); ++iter){
+            
             fluxFichier<<"node"<< iDoc <<" [label=\""<<iter->first<<"\"];"<<endl;
             
             
@@ -131,7 +133,7 @@ void Fichier::genererFichierDot (string nomDot)
                     jRef=iDoc+1;
                 }
                 
-                    fluxFichier<<"node"<< jRef <<" [label=\""<<iter2->first<<"\"];"<<endl;
+                    fluxFichier<<"node"<< jRef <<" [label="<<iter2->first<<"];"<<endl;
                     
                     fluxFichierTemp<<"node"<<iDoc<<
                     " -> "<<"node"<<jRef <<" [label=\""<<iter2->second<<"\"];"<<endl;
@@ -165,18 +167,21 @@ void Fichier::genererFichierDot (string nomDot)
 
 void Fichier::afficheDocConsult (int nbDocsPlusConsultes)
 {
-    
+    list<Document*>::iterator iter = listDocs.begin();
+    if (iter!= listDocs.end() && listDocs.size() !=0) {
+
     listDocs.sort(inf);
     listDocs.reverse();
-    list<Document*>::iterator iter = listDocs.begin();
     cout <<"Liste des "<< nbDocsPlusConsultes<<" les plus consultes" <<endl;
     for(int i = 0; i< nbDocsPlusConsultes; i++){
-        if (iter!= listDocs.end()) {
-            
+        
         cout << i+1<< " : " << (*iter)->toString()<< " :: " <<(*iter)->calculerNbHits() <<endl  ;
        if (i !=nbDocsPlusConsultes) ++iter;
     }
     
+    }else {
+        cout <<"Rien a afficher"<<endl;
+
     }
     
 } //----- Fin de M?thode
@@ -236,7 +241,23 @@ void Fichier::addDocument (vector <string> tableauInfos){
     }
 }
 
+void Fichier::supprimeFichierNbHitsInf(long nbHitsAnalyse){
+    
+    list<Document*>::iterator iter2 = listDocs.begin();
+    for (map <string, Document*>::iterator iter = documents.begin() ; iter != documents.end() ; ++iter){
+        
+        if(iter2 != listDocs.end()){
+        if( iter->second->calculerNbHits() < nbHitsAnalyse ){
+            delete (iter->second);
+            documents.erase(iter);
+            listDocs.erase(iter2);
+        }
+        ++iter2;
+        }
 
+    }
+    
+}
 //------------------------------------------------- Surcharge d'op?rateurs
 
 

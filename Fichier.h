@@ -78,8 +78,8 @@ public:
     // Mode d'emploi : ajoute le doument a la map s'il n'existe pas
     // s'il existe on appelle addReferer
     // Contrat :
-    //void trieListeDocs();
-    
+
+    void supprimeFichierNbHitsInf(long nbHitsAnalyse);
 //------------------------------------------------- Surcharge d'op?rateurs
   
 
