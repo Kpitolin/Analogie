@@ -80,6 +80,8 @@ public:
     // Contrat :
 
     void supprimeFichierNbHitsInf(long nbHitsAnalyse);
+    // Mode d'emploi : permet de supprimer les arcs ayant un nbHit inferieur
+    // a nbHitsAnalyse
 //------------------------------------------------- Surcharge d'op?rateurs
   
 

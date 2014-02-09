@@ -57,7 +57,6 @@ void Fichier::analyseLigne(string ligne,long nbHitsAnalyse,int heureAnalyse,stri
         if (optionsActives[TYPE_FICHIER_INUTILE] && optionsActives [VERIF_HORAIRE]){
             
             if( !inutiliteFichier( tableauInfos [POSITION_URLDOC]) && extraitDate( tableauInfos [POSITION_DATE]) == heureAnalyse  ){
-                cout << "On a un fichier non inutile"<<endl;
                 addDocument(tableauInfos);
                 
             }
@@ -79,13 +78,13 @@ void Fichier::analyseLigne(string ligne,long nbHitsAnalyse,int heureAnalyse,stri
             // ici on a pas d'option
             
             addDocument(tableauInfos);
-
+            
         }
     }
-
-
-
-
+    
+    
+    
+    
 } //----- Fin de M?thode
 
 
@@ -98,10 +97,20 @@ void Fichier::analyseFichier(long nbHitsAnalyse,int heureAnalyse, string nomFich
         while(getline(fichier, ligne)){
             analyseLigne(ligne,nbHitsAnalyse, heureAnalyse, nomFichierDot);
         }
-        supprimeFichierNbHitsInf(nbHitsAnalyse);
-        afficheDocConsult();
-        if (nomFichierDot!=""){
+        
+        if (optionsActives[VERIF_NB_HITS] && optionsActives [GENERATION_DOT]){
+            supprimeFichierNbHitsInf(nbHitsAnalyse);
+            afficheDocConsult();
             genererFichierDot(nomFichierDot);
+            
+        } else if (optionsActives [GENERATION_DOT]){
+            afficheDocConsult();
+            genererFichierDot(nomFichierDot);
+            
+            
+        }else{
+            afficheDocConsult();
+            
         }
     }
     
@@ -113,14 +122,16 @@ void Fichier::genererFichierDot (string nomDot)
     
     ofstream fluxFichier(nomDot, ios::out);
     ostringstream fluxFichierTemp;
+    ostringstream fluxFichierTemp2;
+    
     int iDoc = 0;
     int jRef = 0;
     int debutBoucle = 0;
     
-
+    
     if(fluxFichier && fluxFichierTemp){
         fluxFichier<<"digraph {"<<endl;
-      
+        
         for(map<string,Document*>::iterator iter=documents.begin();  iter!= documents.end(); ++iter){
             
             fluxFichier<<"node"<< iDoc <<" [label=\""<<iter->first<<"\"];"<<endl;
@@ -133,10 +144,10 @@ void Fichier::genererFichierDot (string nomDot)
                     jRef=iDoc+1;
                 }
                 
-                    fluxFichier<<"node"<< jRef <<" [label="<<iter2->first<<"];"<<endl;
-                    
-                    fluxFichierTemp<<"node"<<iDoc<<
-                    " -> "<<"node"<<jRef <<" [label=\""<<iter2->second<<"\"];"<<endl;
+                fluxFichier<<"node"<< jRef <<" [label="<<iter2->first<<"];"<<endl;
+                
+                fluxFichierTemp<<"node"<<iDoc<<
+                " -> "<<"node"<<jRef <<" [label=\""<<iter2->second<<"\"];"<<endl;
                 
                 jRef++;
                 debutBoucle++;
@@ -147,7 +158,7 @@ void Fichier::genererFichierDot (string nomDot)
             debutBoucle = 0;
             
             
-                    }
+        }
         fluxFichier << fluxFichierTemp.str();
         fluxFichier<<"}";
         
@@ -159,7 +170,7 @@ void Fichier::genererFichierDot (string nomDot)
         cout<<"Impossible d'ecrire sur le fichier"<<nomDot<<endl;
     }
     
- 
+    
     
 } //----- Fin de M?thode
 
@@ -167,21 +178,27 @@ void Fichier::genererFichierDot (string nomDot)
 
 void Fichier::afficheDocConsult (int nbDocsPlusConsultes)
 {
-    list<Document*>::iterator iter = listDocs.begin();
-    if (iter!= listDocs.end() && listDocs.size() !=0) {
-
     listDocs.sort(inf);
     listDocs.reverse();
-    cout <<"Liste des "<< nbDocsPlusConsultes<<" les plus consultes" <<endl;
-    for(int i = 0; i< nbDocsPlusConsultes; i++){
+    list<Document*>::iterator iter = listDocs.begin();
+    if (listDocs.size() !=0) {
         
-        cout << i+1<< " : " << (*iter)->toString()<< " :: " <<(*iter)->calculerNbHits() <<endl  ;
-       if (i !=nbDocsPlusConsultes) ++iter;
-    }
-    
+        
+        cout <<"Liste des "<< nbDocsPlusConsultes<<" les plus consultes" <<endl;
+        for(int i = 0; i< nbDocsPlusConsultes; i++){
+            
+            if (iter!= listDocs.end()){
+                cout << i+1<< " : " << (*iter)->toString()<< " :: " <<(*iter)->calculerNbHits() <<endl;
+            }else {
+                break;
+            }
+            
+            if (i !=nbDocsPlusConsultes ) ++iter;
+        }
+        
     }else {
         cout <<"Rien a afficher"<<endl;
-
+        
     }
     
 } //----- Fin de M?thode
@@ -237,25 +254,35 @@ void Fichier::addDocument (vector <string> tableauInfos){
         doc->addReferer(tableauInfos [POSITION_URLREFERER]);
         documents[tableauInfos [POSITION_URLDOC]]=doc;
         listDocs.push_back(doc);
-
+        
     }
 }
 
 void Fichier::supprimeFichierNbHitsInf(long nbHitsAnalyse){
     
-    list<Document*>::iterator iter2 = listDocs.begin();
-    for (map <string, Document*>::iterator iter = documents.begin() ; iter != documents.end() ; ++iter){
-        
-        if(iter2 != listDocs.end()){
-        if( iter->second->calculerNbHits() < nbHitsAnalyse ){
-            delete (iter->second);
-            documents.erase(iter);
-            listDocs.erase(iter2);
-        }
-        ++iter2;
-        }
+    map<string,Document*>::iterator iter2;
+    for (list<Document*>::iterator iter = listDocs.begin(); iter != listDocs.end() ; ++iter){
 
+        iter2 = documents.find((*iter)->toString());
+    
+            //dans les documents on supprime les referer
+            //ayant un nb de hits inférieur au nb demandé
+            // si un document n'a plus de referer, on le supprime
+            if(iter2 != documents.end() && (*iter)->removeReferer(nbHitsAnalyse) ){
+
+                documents.erase(iter2);
+
+                listDocs.erase(iter);
+
+
+            }
+            
+        
+        
     }
+    
+   
+   
     
 }
 //------------------------------------------------- Surcharge d'op?rateurs
@@ -283,7 +310,12 @@ Fichier::Fichier (string cheminAccesFichier , vector<bool> options)
     
     cheminAcces = cheminAccesFichier ;
     optionsActives = options;
-    
+    cout << "-x :: "<<optionsActives[TYPE_FICHIER_INUTILE]<<endl;
+    cout << "-l  :: "<<optionsActives[VERIF_NB_HITS] <<endl;
+    cout << "-t  :: "<<optionsActives[VERIF_HORAIRE] <<endl;
+    cout << "-g  :: "<<optionsActives[GENERATION_DOT]<<endl;
+
+
     
 } //----- Fin de Fichier
 
@@ -296,10 +328,10 @@ Fichier::~Fichier ( )
     cout << "Appel au destructeur de <Fichier>" << endl;
 #endif
     
-        for (map<string,Document*>::iterator iter = documents.begin(); iter!=documents.end();++iter ) {
-            delete (iter->second);
-        }
-
+    for (map<string,Document*>::iterator iter = documents.begin(); iter!=documents.end();++iter ) {
+        delete (iter->second);
+    }
+    
     
     
     

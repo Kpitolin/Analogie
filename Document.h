@@ -8,7 +8,6 @@ using namespace std;
 #include <map>
 #include <iostream>
 //------------------------------------------------------------- Constantes
-
 //------------------------------------------------------------------ Types 
 
 //------------------------------------------------------------------------ 
@@ -36,13 +35,14 @@ public:
     void addReferer (string urlReferer);
     // Mode d'emploi : sert à ajouter un url referer associe au document
     // ou à incrementer le nb de hits pour un referer existant
+    
+    bool removeReferer (long nbHits);
+    // Mode d'emploi : sert à supprimer les referer ayant un nb de hits
+    // inférieur à nbHits retourne true si aucun referer
+    // n'a un nb suffisant de hits
+    
 //------------------------------------------------- Surcharge d'op?rateurs
-    //friend bool operator == ( const Document & a ,const Document & b );
-	// Mode d'emploi :
-	// Redéfinition de l'opérateur ==.
-	//
-	// Contrat :
-	//
+    
 
     friend bool operator< (const Document &a, const Document &b);
 	// Mode d'emploi :

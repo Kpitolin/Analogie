@@ -54,6 +54,29 @@ void Document::addReferer (string urlReferer){
     calculerNbHits();
 }
 
+
+bool Document::removeReferer (long nbHits){
+    bool resultat =false;
+    for (auto it = referers.cbegin(); it != referers.cend() ; )
+    {
+        if (it->second < nbHits)
+        {
+            referers.erase(it++);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    calculerNbHits();
+
+    if (referers.empty()){
+        resultat = true;
+    }
+    
+    return resultat;
+}
+
 //------------------------------------------------- Surcharge d'op?rateurs
 
 

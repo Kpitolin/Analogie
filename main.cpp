@@ -10,7 +10,6 @@
 int main(int argc, char * argv[])
 {
     CreateurFichier c1 (argc, argv);
-    
     return c1.creeFichier();
 }
 
