@@ -103,9 +103,10 @@ bool CreateurFichier::analyseArgument ()
                 istringstream iss (chaine2);
                 
                 if(listeArguments[i]==OPTIONS[GENERATION_DOT]){
-                    if(verifExtension (EXTDOT, listeArguments[i+1])){ ;
+                    if(verifExtension (EXTDOT, listeArguments[i+1])){
                         nomFichierDot =listeArguments[i+1];
                         nbArgsValide+=2;
+                        options[GENERATION_DOT] = true;
                         i++;
                     }
                     
@@ -115,6 +116,8 @@ bool CreateurFichier::analyseArgument ()
                     iss>>nbhits ;
                     if(verifType(chaine2,nbhits) && nbhits>=0){
                         nbArgsValide+=2;
+                        options[VERIF_NB_HITS] = true;
+
                         i++;
                     }
                     
@@ -122,11 +125,14 @@ bool CreateurFichier::analyseArgument ()
                     iss>>heure;
                     if(verifType(chaine2,heure) && heure>=0 && heure<HEUREMAX){
                         nbArgsValide+=2;
+                        options[VERIF_HORAIRE] = true;
                         i++;
                     }
                     
                 }else if(listeArguments[i]==OPTIONS[TYPE_FICHIER_INUTILE]){
                     nbArgsValide++;
+                    options[TYPE_FICHIER_INUTILE] = true;
+
                     
                 }
             }
@@ -151,7 +157,7 @@ bool CreateurFichier::creeFichier()
 {
     if(analyseArgument())
     {
-        Fichier fichier1 (listeArguments[nbArgs-1],traiteOptions());
+        Fichier fichier1 (listeArguments[nbArgs-1],options);
        
         fichier1.analyseFichier(nbhits,heure,nomFichierDot);
         return true;
@@ -160,30 +166,6 @@ bool CreateurFichier::creeFichier()
 } //----- Fin de M?thode
 
 
-
-
-
-vector<bool> CreateurFichier::traiteOptions (){
-    vector <bool> options(OPTIONS.size());
-    for (int i=0; i< listeArguments.size(); i++)
-    {
-        for (int j=0; j< OPTIONS.size(); j++){
-            
-            if (listeArguments[i].find(TIRET)!= -1 && listeArguments[i]==OPTIONS[j]){
-                options[j]=true;
-                break;
-            }else if (listeArguments[i].find(TIRET)!= -1){
-                options[j]=false;
-
-            }
-
-        }
-
-    }
-    
-
-    return options;
-}//----- Fin de M?thode
 
 
 
@@ -214,7 +196,8 @@ CreateurFichier::CreateurFichier (int argc, char * lstarg[])
     listeArguments = vector <string> (lstarg+1,lstarg+argc);
     heure = 0;
     nbhits = 0;
-   
+    options = vector<bool>(OPTIONS.size());
+
 
 } //----- Fin de CreateurFichier
 

@@ -274,10 +274,8 @@ void Fichier::supprimeFichierNbHitsInf(long nbHitsAnalyse){
 
                 listDocs.erase(iter);
 
-
             }
-            
-        
+ 
         
     }
     
@@ -310,12 +308,6 @@ Fichier::Fichier (string cheminAccesFichier , vector<bool> options)
     
     cheminAcces = cheminAccesFichier ;
     optionsActives = options;
-    cout << "-x :: "<<optionsActives[TYPE_FICHIER_INUTILE]<<endl;
-    cout << "-l  :: "<<optionsActives[VERIF_NB_HITS] <<endl;
-    cout << "-t  :: "<<optionsActives[VERIF_HORAIRE] <<endl;
-    cout << "-g  :: "<<optionsActives[GENERATION_DOT]<<endl;
-
-
     
 } //----- Fin de Fichier
 

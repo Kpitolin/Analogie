@@ -66,9 +66,6 @@ public:
     //  Mode d'emploi: verifie la conformite du fichier
     // (bonne extension + existence)
     
-    vector<bool> traiteOptions ();
-    //  Mode d'emploi: Renvoie un tableau de booléens permettant d'identifier
-    //  les options actives (dans l'ordre précisé par l'enum Options)
 
 //------------------------------------------------- Surcharge d'op?rateurs
 
@@ -95,6 +92,7 @@ protected:
     int nbhits;
     int heure;
     string nomFichierDot;
+    vector <bool> options;
 
 };
 

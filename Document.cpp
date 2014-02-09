@@ -37,7 +37,6 @@ string Document::toString ()
 long Document::calculerNbHits ()
 {
     
-     //nbHits ++;
     nbHits = 0;
     for ( map <string, int>::iterator iter = referers.begin(); iter!=referers.end();++iter){
        nbHits+= iter->second ;
